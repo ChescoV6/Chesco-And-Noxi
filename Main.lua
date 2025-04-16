@@ -732,4 +732,4 @@ ActiveTab = TabContainers["Aimbot"]
 TabFrame:GetChildren()[1].BackgroundTransparency = 0
 TabFrame:GetChildren()[1].TextColor3 = Color3.fromRGB(108, 59, 170)
 
-debugPrint("Chesco & Noxi's Ultimate Cheat UI v4.7 loaded!")
+debugPrint("Chesco & Noxi v4.7 loaded!")
