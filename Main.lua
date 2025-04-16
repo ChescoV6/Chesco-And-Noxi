@@ -1,4 +1,4 @@
--- Chesco & Noxi's Ultimate Roblox Cheat UI v4.6 - Enhanced Edition
+-- Chesco & Noxi v4.6
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
