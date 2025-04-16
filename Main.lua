@@ -1,4 +1,4 @@
--- Chesco & Noxi v4.6
+-- Chesco & Noxi v4.7
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -45,7 +45,6 @@ WelcomeFrame.Position = UDim2.new(0.5, -125, 0.5, -60)
 WelcomeFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
 WelcomeFrame.BackgroundTransparency = 0.1
 WelcomeFrame.Visible = true
-
 local WelcomeCorner = Instance.new("UICorner", WelcomeFrame)
 WelcomeCorner.CornerRadius = UDim.new(0, 15)
 
@@ -54,7 +53,7 @@ WelcomeLabel.Size = UDim2.new(1, 0, 0, 40)
 WelcomeLabel.Position = UDim2.new(0, 0, 0, 20)
 WelcomeLabel.BackgroundTransparency = 1
 WelcomeLabel.Text = "Welcome, " .. LocalPlayer.Name .. "!"
-WelcomeLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
+WelcomeLabel.TextColor3 = Color3.fromRGB(108, 59, 170)
 WelcomeLabel.TextSize = 20
 WelcomeLabel.Font = Enum.Font.GothamBold
 
@@ -78,13 +77,12 @@ MainFrame.ClipsDescendants = true
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Visible = false
-
 local UICorner = Instance.new("UICorner", MainFrame)
 UICorner.CornerRadius = UDim.new(0, 15)
 
 local GlowEffect = Instance.new("UIStroke", MainFrame)
 GlowEffect.Thickness = 2
-GlowEffect.Color = Color3.fromRGB(0, 255, 255)
+GlowEffect.Color = Color3.fromRGB(108, 59, 170)
 GlowEffect.Transparency = 0.5
 GlowEffect.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
@@ -99,8 +97,8 @@ local Title = Instance.new("TextLabel", MainFrame)
 Title.Size = UDim2.new(1, -60, 0, 25)
 Title.Position = UDim2.new(0, 10, 0, 5)
 Title.BackgroundTransparency = 1
-Title.Text = "Chesco & Noxi - v4.6"
-Title.TextColor3 = Color3.fromRGB(0, 255, 255)
+Title.Text = "Chesco & Noxi - v4.7"
+Title.TextColor3 = Color3.fromRGB(108, 59, 170)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 16
 Title.TextXAlignment = Enum.TextXAlignment.Left
@@ -161,7 +159,7 @@ for i, tabName in ipairs(Tabs) do
         ActiveTab = TabContainer
         ActiveTab.Visible = true
         TabButton.BackgroundTransparency = 0
-        TabButton.TextColor3 = Color3.fromRGB(0, 255, 255)
+        TabButton.TextColor3 = Color3.fromRGB(108, 59, 170)
     end)
 end
 
@@ -180,16 +178,16 @@ FPSLabel.Size = UDim2.new(0.5, -20, 0, 20)
 FPSLabel.Position = UDim2.new(0.5, 10, 1, -30)
 FPSLabel.BackgroundTransparency = 1
 FPSLabel.Text = "FPS: 0"
-FPSLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
+FPSLabel.TextColor3 = Color3.fromRGB(108, 59, 170)
 FPSLabel.TextSize = 12
 FPSLabel.Font = Enum.Font.Gotham
 FPSLabel.TextXAlignment = Enum.TextXAlignment.Right
 
 -- Settings
-local AimbotSettings = {Enabled = false, SilentAim = false, AimLock = false, Smoothing = 1, FOV = 100, TriggerKey = Enum.UserInputType.MouseButton2}
-local ESPSettings = {Enabled = false, Names = true, Health = true, Distance = true, Chams = false, MaxDistance = 1000, TextColor = Color3.fromRGB(0, 255, 255), ChamsColor = Color3.fromRGB(0, 255, 0), Rainbow = false}
+local AimbotSettings = {Enabled = false, SilentAim = false, AimLock = false, Smoothing = 1, FOV = 100, TriggerKey = Enum.UserInputType.MouseButton2, TeamCheck = true}
+local ESPSettings = {Enabled = false, Names = true, Health = true, Distance = true, Chams = false, MaxDistance = 1000, TextColor = Color3.fromRGB(108, 59, 170), ChamsColor = Color3.fromRGB(0, 255, 0), Rainbow = false}
 local RageSettings = {KillAura = false, KillAuraRange = 10, SpeedHack = false, SpeedMultiplier = 1, Noclip = false, RageMode = false, FlyHack = false, FlySpeed = 50}
-local VisualSettings = {Crosshair = false, FOVCircle = false, FOVCircleRadius = 100, FOVCircleColor = Color3.fromRGB(0, 255, 255), Fullbright = false}
+local VisualSettings = {Crosshair = false, FOVCircle = false, FOVCircleRadius = 100, FOVCircleColor = Color3.fromRGB(108, 59, 170), Fullbright = false}
 local MiscSettings = {SpinBot = false, AntiAim = false, KillSound = false, Notifications = true}
 
 local ConfigSettings = {Aimbot = AimbotSettings, ESP = ESPSettings, Rage = RageSettings, Visuals = VisualSettings, Misc = MiscSettings}
@@ -229,7 +227,7 @@ local function showNotification(message, color)
     NotifLabel.Size = UDim2.new(1, 0, 1, 0)
     NotifLabel.BackgroundTransparency = 1
     NotifLabel.Text = message
-    NotifLabel.TextColor3 = color or Color3.fromRGB(0, 255, 255)
+    NotifLabel.TextColor3 = color or Color3.fromRGB(108, 59, 170)
     NotifLabel.TextSize = 12
     NotifLabel.Font = Enum.Font.Gotham
     wait(2)
@@ -319,7 +317,7 @@ local function createSlider(label, min, max, current, callback, parent, yPos)
             SliderFill.Size = UDim2.new(fraction, 0, 1, 0)
             Label.Text = label .. ": " .. value
             callback(value)
-            showNotification(label .. " set to " .. value, Color3.fromRGB(0, 255, 255))
+            showNotification(label .. " set to " .. value, Color3.fromRGB(108, 59, 170))
         end
     end)
 end
@@ -327,8 +325,9 @@ end
 createToggle("Aimbot", AimbotSettings.Enabled, function(value) AimbotSettings.Enabled = value end, TabContainers["Aimbot"], 0)
 createToggle("Silent Aim", AimbotSettings.SilentAim, function(value) AimbotSettings.SilentAim = value end, TabContainers["Aimbot"], 30)
 createToggle("Aim Lock", AimbotSettings.AimLock, function(value) AimbotSettings.AimLock = value end, TabContainers["Aimbot"], 60)
-createSlider("Smoothing", 1, 10, AimbotSettings.Smoothing, function(value) AimbotSettings.Smoothing = value end, TabContainers["Aimbot"], 90)
-createSlider("FOV", 10, 300, AimbotSettings.FOV, function(value) AimbotSettings.FOV = value end, TabContainers["Aimbot"], 135)
+createToggle("Team Check", AimbotSettings.TeamCheck, function(value) AimbotSettings.TeamCheck = value end, TabContainers["Aimbot"], 90)
+createSlider("Smoothing", 1, 10, AimbotSettings.Smoothing, function(value) AimbotSettings.Smoothing = value end, TabContainers["Aimbot"], 120)
+createSlider("FOV", 10, 300, AimbotSettings.FOV, function(value) AimbotSettings.FOV = value end, TabContainers["Aimbot"], 165)
 
 createToggle("ESP Enabled", ESPSettings.Enabled, function(value) ESPSettings.Enabled = value end, TabContainers["ESP"], 0)
 createToggle("Names", ESPSettings.Names, function(value) ESPSettings.Names = value end, TabContainers["ESP"], 30)
@@ -408,11 +407,11 @@ local isFlying = false
 
 local CrosshairH = Drawing.new("Line")
 CrosshairH.Thickness = 1
-CrosshairH.Color = Color3.fromRGB(0, 255, 255)
+CrosshairH.Color = Color3.fromRGB(108, 59, 170)
 
 local CrosshairV = Drawing.new("Line")
 CrosshairV.Thickness = 1
-CrosshairV.Color = Color3.fromRGB(0, 255, 255)
+CrosshairV.Color = Color3.fromRGB(108, 59, 170)
 
 local FOVCircle = Drawing.new("Circle")
 FOVCircle.Thickness = 2
@@ -426,6 +425,9 @@ local function GetClosestPlayer()
 
     for _, Player in pairs(Players:GetPlayers()) do
         if Player == LocalPlayer or not Player.Character or not Player.Character:FindFirstChild("HumanoidRootPart") or not Player.Character:FindFirstChild("Humanoid") or Player.Character.Humanoid.Health <= 0 then continue end
+
+        -- Team Check
+        if AimbotSettings.TeamCheck and Player.Team == LocalPlayer.Team and LocalPlayer.Team ~= nil then continue end
 
         local AimPart = Player.Character.HumanoidRootPart
         local ScreenPos, OnScreen = Camera:WorldToViewportPoint(AimPart.Position)
@@ -728,6 +730,6 @@ end)
 TabContainers["Aimbot"].Visible = true
 ActiveTab = TabContainers["Aimbot"]
 TabFrame:GetChildren()[1].BackgroundTransparency = 0
-TabFrame:GetChildren()[1].TextColor3 = Color3.fromRGB(0, 255, 255)
+TabFrame:GetChildren()[1].TextColor3 = Color3.fromRGB(108, 59, 170)
 
-debugPrint("Chesco & Noxi v4.6 loaded!")
+debugPrint("Chesco & Noxi's Ultimate Cheat UI v4.7 loaded!")
