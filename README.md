@@ -28,6 +28,7 @@
 - ✈️ Flying
 - 😉 No-Clip
 - ⏩ Speed-Hacks
+- 🤬 Rage-Mode
 - ➕ WAYYY MORE
 
 Built from the ground up as a better, faster and better replacement to Exunys cheats, it’s free, ad-free, open-source, and made for real exploiters.
