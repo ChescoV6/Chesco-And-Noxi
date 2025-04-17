@@ -1,39 +1,48 @@
-🌐 Chesco & Noxi | Universal Script 🌐
+<!-- Banner -->
+<p align="center">
+  <img src="[https://your-image-url.com/banner.png](https://imgur.com/a/wJza8E8)" alt="Chesco & Noxi Banner" />
+</p>
 
-Aimbot • ESP • Crosshair  
-No keys, no ads, just clean, open-source fun.
+<h1 align="center">🌌 Chesco & Noxi</h1>
+<p align="center">
+  Universal Cheat Script — Aimbot • ESP • Crosshair<br>
+  🚫 No keys • 🚫 No ads • 💻 100% Free & Open Source
+</p>
 
-───────────────
-🔥 What is this?
+<p align="center">
+  <a href="https://github.com/yourname/chesco-noxi/stargazers"><img src="https://img.shields.io/github/stars/yourname/chesco-noxi?style=flat-square" alt="Stars"></a>
+  <a href="https://github.com/yourname/chesco-noxi/forks"><img src="https://img.shields.io/github/forks/yourname/chesco-noxi?style=flat-square" alt="Forks"></a>
+  <a href="https://github.com/yourname/chesco-noxi"><img src="https://img.shields.io/github/languages/top/yourname/chesco-noxi?style=flat-square" alt="Top Language"></a>
+  <a href="https://discord.com/users/chesco.v1"><img src="https://img.shields.io/badge/discord-@chesco.v1-7289DA?style=flat-square&logo=discord&logoColor=white" alt="Discord"></a>
+</p>
 
-Chesco & Noxi is a fully customizable cheat script packed with features like:
+---
 
-• Aimbot  
-• Wall Hack (ESP)  
-• Custom Crosshair
+## 🚀 Overview
 
-───────────────
-🛠️ What’s New?
+**Chesco & Noxi** is a fully featured, customizable Lua script offering:
+- 🎯 Aimbot  
+- 🔍 ESP (Wall Hack)  
+- 🎯 Crosshair  
 
-• Brand new open-source ESP module, polished to perfection  
-• Custom-built Lua UI library, made with input from real exploiters  
-• Simple GUI — just hit **[X]** in the corner to close it
+Built from the ground up as a better, faster replacement to the old AirHub, it’s free, ad-free, open-source, and made for real exploiters.
 
-───────────────
-💎 Want more?
+---
 
-If you're looking for something extra, there’s a more stacked version with:
+## ✨ Features
 
-• Chams, Skeleton, Highlights  
-• Extra box types (Square, Quad, Corner)  
-• NoClip, Fly, Full Bright, Ambient Changer  
-• And more...
+- ✅ **Aimbot** – Configurable, clean & accurate
+- ✅ **ESP** – Modular system with clean visuals
+- ✅ **Crosshair** – Customizable static overlay
+- ✅ **Custom UI** – Built from scratch using Lua
+- ✅ **No keys / no ads / no limits**
 
-───────────────
-💬 Hit me up
+---
 
-Got ideas? Want the premium version?  
-DM me on Discord: **@chesco.v1**
+## 🛠 Installation
 
-───────────────
-Free. Clean. No BS.
+1. Make sure your exploit supports `loadstring()` and UI libraries.
+2. Copy and paste the following into your executor:
+
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/yourname/chesco-noxi/main/main.lua"))()
