@@ -46,4 +46,4 @@ Built from the ground up as a better, faster replacement to the old AirHub, itâ€
 2. Copy and paste the following into your executor:
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/yourname/chesco-noxi/main/main.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ChescoV6/Open-Source-Roblox-Aimbot-ESP/refs/heads/main/Main.lua"))()
