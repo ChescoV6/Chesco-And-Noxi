@@ -42,7 +42,7 @@ Built from the ground up as a better, faster and better replacement to Exunys ch
 - ✅ **Crosshair** – Customizable static overlay
 - ✅ **Custom UI** – Built from scratch using Lua
 - ✅ **No keys / no ads / no limits**
-- ✅ **Only One Script/ Compared to Exunys 3 Scripts**
+- ✅ **Only One File/ Compared to Exunys 3 Different Files**
 - ✅ **Packed Everything Into Only 1100 Lines!**
 
 ---
