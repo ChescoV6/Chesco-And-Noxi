@@ -13,7 +13,7 @@
   <a href="https://github.com/yourname/chesco-noxi/stargazers"><img src="https://img.shields.io/github/stars/yourname/chesco-noxi?style=flat-square" alt="Stars"></a>
   <a href="https://github.com/yourname/chesco-noxi/forks"><img src="https://img.shields.io/github/forks/yourname/chesco-noxi?style=flat-square" alt="Forks"></a>
   <a href="https://github.com/yourname/chesco-noxi"><img src="https://img.shields.io/github/languages/top/yourname/chesco-noxi?style=flat-square" alt="Top Language"></a>
-  <a href="https://discord.com/users/chesco.v1"><img src="https://img.shields.io/badge/discord-@chesco.v1-7289DA?style=flat-square&logo=discord&logoColor=white" alt="Discord"></a>
+  <a href="[https://discord.com/users/chesco.v1](https://discord.gg/mPAg6qCX)"><img src="https://img.shields.io/badge/discord-@chesco.v1-7289DA?style=flat-square&logo=discord&logoColor=white" alt="Discord"></a>
 </p>
 
 ---
