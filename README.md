@@ -24,7 +24,7 @@
 - 🎯 Aimbot  
 - 🔍 ESP (Wall Hack)  
 - 🎯 Crosshair
-- WAYYY MORE
+- ➕ WAYYY MORE
 
 Built from the ground up as a better, faster and better replacement to Exunys cheats, it’s free, ad-free, open-source, and made for real exploiters.
 
