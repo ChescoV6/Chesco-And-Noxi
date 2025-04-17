@@ -1,8 +1,3 @@
-<!-- Banner -->
-<p align="center">
-  <img src="" alt="" />
-</p>
-
 <h1 align="center">🌌 Chesco & Noxi</h1>
 <p align="center">
   Universal Cheat Script — Aimbot • ESP • Crosshair<br>
