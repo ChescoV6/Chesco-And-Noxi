@@ -1,6 +1,6 @@
 <!-- Banner -->
 <p align="center">
-  <img src="[https://your-image-url.com/banner.png](https://imgur.com/a/wJza8E8)" alt="Chesco & Noxi Banner" />
+  <img src="https://imgur.com/a/wJza8E8" alt="Chesco & Noxi Banner" />
 </p>
 
 <h1 align="center">🌌 Chesco & Noxi</h1>
