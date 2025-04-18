@@ -1,4 +1,4 @@
--- Chesco & Noxi V.5.2.8
+-- Chesco & Noxi V.5.2.9
 --     Credits to Chesco
 --     Made for Me and Noxi
 --     Hope you like it
@@ -27,31 +27,91 @@ UI.Name = "Chesco_Noxi_CheatUI_" .. math.random(1000, 9999)
 UI.IgnoreGuiInset = true
 UI.Parent = game.CoreGui or LocalPlayer.PlayerGui
 
+-- Enhanced Welcome Screen
 local WelcomeFrame = Instance.new("Frame", UI)
-WelcomeFrame.Size = UDim2.new(0, 250, 0, 120)
-WelcomeFrame.Position = UDim2.new(0.5, -125, 0.5, -60)
+WelcomeFrame.Size = UDim2.new(0, 350, 0, 250)
+WelcomeFrame.Position = UDim2.new(0.5, -175, 0.5, -125)
 WelcomeFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
 WelcomeFrame.BackgroundTransparency = 0.1
+WelcomeFrame.ClipsDescendants = true
 local WelcomeCorner = Instance.new("UICorner", WelcomeFrame)
 WelcomeCorner.CornerRadius = UDim.new(0, 12)
+local WelcomeGradient = Instance.new("UIGradient", WelcomeFrame)
+WelcomeGradient.Color = ColorSequence.new(Color3.fromRGB(10, 10, 20), Color3.fromRGB(20, 20, 40))
+local WelcomeShadow = Instance.new("UIStroke", WelcomeFrame)
+WelcomeShadow.Thickness = 2
+WelcomeShadow.Color = Color3.fromRGB(0, 200, 200)
+WelcomeShadow.Transparency = 0.5
+
+-- Avatar Image
+local AvatarImage = Instance.new("ImageLabel", WelcomeFrame)
+AvatarImage.Size = UDim2.new(0, 100, 0, 100)
+AvatarImage.Position = UDim2.new(0.5, -50, 0, 20)
+AvatarImage.BackgroundTransparency = 1
+local AvatarCorner = Instance.new("UICorner", AvatarImage)
+AvatarCorner.CornerRadius = UDim.new(1, 0) -- Circular mask
+local AvatarShadow = Instance.new("UIStroke", AvatarImage)
+AvatarShadow.Thickness = 2
+AvatarShadow.Color = Color3.fromRGB(0, 200, 200)
+AvatarShadow.Transparency = 0.7
+local thumbnailType = Enum.ThumbnailType.HeadShot
+local thumbnailSize = Enum.ThumbnailSize.Size420x420
+local userId = LocalPlayer.UserId
+local avatarImageUrl = Players:GetUserThumbnailAsync(userId, thumbnailType, thumbnailSize)
+AvatarImage.Image = avatarImageUrl
+
+-- Welcome Label
 local WelcomeLabel = Instance.new("TextLabel", WelcomeFrame)
 WelcomeLabel.Size = UDim2.new(1, 0, 0, 40)
-WelcomeLabel.Position = UDim2.new(0, 0, 0, 20)
+WelcomeLabel.Position = UDim2.new(0, 0, 0, 130)
 WelcomeLabel.BackgroundTransparency = 1
 WelcomeLabel.Text = "Welcome, " .. LocalPlayer.Name .. "!"
 WelcomeLabel.TextColor3 = Color3.fromRGB(108, 59, 170)
-WelcomeLabel.TextSize = 20
+WelcomeLabel.TextSize = 24
 WelcomeLabel.Font = Enum.Font.GothamBold
+WelcomeLabel.TextTransparency = 1
+
+-- Open Cheat Button
 local OpenButton = Instance.new("TextButton", WelcomeFrame)
-OpenButton.Size = UDim2.new(0, 100, 0, 35)
-OpenButton.Position = UDim2.new(0.5, -50, 0.6, 0)
+OpenButton.Size = UDim2.new(0, 120, 0, 40)
+OpenButton.Position = UDim2.new(0.5, -60, 0, 180)
 OpenButton.BackgroundColor3 = Color3.fromRGB(0, 200, 200)
 OpenButton.Text = "Open Cheat"
 OpenButton.TextColor3 = Color3.fromRGB(10, 10, 20)
-OpenButton.TextSize = 16
+OpenButton.TextSize = 18
 OpenButton.Font = Enum.Font.GothamBold
+OpenButton.TextTransparency = 1
 local OpenCorner = Instance.new("UICorner", OpenButton)
 OpenCorner.CornerRadius = UDim.new(0, 8)
+local OpenShadow = Instance.new("UIStroke", OpenButton)
+OpenShadow.Thickness = 1
+OpenShadow.Color = Color3.fromRGB(10, 10, 20)
+OpenShadow.Transparency = 0.5
+
+-- Animation for Welcome Screen
+WelcomeFrame.Size = UDim2.new(0, 0, 0, 0)
+WelcomeFrame.BackgroundTransparency = 1
+local welcomeTween = TweenService:Create(WelcomeFrame, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    Size = UDim2.new(0, 350, 0, 250),
+    BackgroundTransparency = 0.1
+})
+welcomeTween:Play()
+local labelTween = TweenService:Create(WelcomeLabel, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, false, 0.3), {
+    TextTransparency = 0
+})
+labelTween:Play()
+local buttonTween = TweenService:Create(OpenButton, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, false, 0.5), {
+    TextTransparency = 0
+})
+buttonTween:Play()
+
+-- Button Hover Animation
+OpenButton.MouseEnter:Connect(function()
+    TweenService:Create(OpenButton, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Size = UDim2.new(0, 130, 0, 45)}):Play()
+end)
+OpenButton.MouseLeave:Connect(function()
+    TweenService:Create(OpenButton, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Size = UDim2.new(0, 120, 0, 40)}):Play()
+end)
 
 local MainFrame = Instance.new("Frame", UI)
 MainFrame.Size = UDim2.new(0, 450, 0, 350)
@@ -74,7 +134,7 @@ local Title = Instance.new("TextLabel", MainFrame)
 Title.Size = UDim2.new(1, -100, 0, 25)
 Title.Position = UDim2.new(0, 10, 0, 5)
 Title.BackgroundTransparency = 1
-Title.Text = "Chesco & Noxi - v5.2.8"
+Title.Text = "Chesco & Noxi - v5.2.9"
 Title.TextColor3 = Color3.fromRGB(108, 59, 170)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 18
@@ -124,17 +184,6 @@ for i, tabName in ipairs(Tabs) do
     TabButton.Parent = TabFrame
     local ButtonCorner = Instance.new("UICorner", TabButton)
     ButtonCorner.CornerRadius = UDim.new(0, 5)
-    local TabContainer = Instance.new("ScrollingFrame")
-    TabContainer.Size = UDim2.new(1, -20, 1, -90)
-    TabContainer.Position = UDim2.new(0, 10, 0, 80)
-    TabContainer.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
-    TabContainer.BackgroundTransparency = 0.1
-    TabContainer.Visible = false
-    TabContainer.ScrollBarThickness = 5
-    TabContainer.ScrollBarImageColor3 = Color3.fromRGB(108, 59, 170)
-    TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
-    TabContainer.Parent = MainFrame
-    TabContainers[tabName] = TabContainer
     TabButton.MouseEnter:Connect(function()
         if ActiveTab ~= TabContainer then
             TweenService:Create(TabButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {Size = UDim2.new(1/#Tabs + 0.01, -2, 1, 2)}):Play()
@@ -158,6 +207,17 @@ for i, tabName in ipairs(Tabs) do
         ActiveTab = TabContainer
         ActiveTab.Visible = true
     end)
+    local TabContainer = Instance.new("ScrollingFrame")
+    TabContainer.Size = UDim2.new(1, -20, 1, -90)
+    TabContainer.Position = UDim2.new(0, 10, 0, 80)
+    TabContainer.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
+    TabContainer.BackgroundTransparency = 0.1
+    TabContainer.Visible = false
+    TabContainer.ScrollBarThickness = 5
+    TabContainer.ScrollBarImageColor3 = Color3.fromRGB(108, 59, 170)
+    TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
+    TabContainer.Parent = MainFrame
+    TabContainers[tabName] = TabContainer
 end
 
 local StatusLabel = Instance.new("TextLabel", MainFrame)
