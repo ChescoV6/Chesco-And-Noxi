@@ -1,3 +1,9 @@
+-- Chesco & Noxi V.5.2.8
+--     Credits to Chesco
+--     Made for Me and Noxi
+--     Hope you like it
+--     Full Source Below:
+
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -8,7 +14,8 @@ local Camera = workspace.CurrentCamera
 local Lighting = game:GetService("Lighting")
 
 local function saveConfig(settings)
-    pcall(function() writefile("Chesco_Noxi_Config.json", HttpService:JSONEncode(settings)) end)
+    local success, err = pcall(function() writefile("Chesco_Noxi_Config.json", HttpService:JSONEncode(settings)) end)
+    if not success then warn("Failed to save config: " .. tostring(err)) end
 end
 local function loadConfig()
     local success, data = pcall(function() return HttpService:JSONDecode(readfile("Chesco_Noxi_Config.json")) end)
@@ -51,7 +58,7 @@ MainFrame.Size = UDim2.new(0, 450, 0, 350)
 MainFrame.Position = UDim2.new(0.5, -225, 0.5, -175)
 MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
 MainFrame.BackgroundTransparency = 0.1
-MainFrame.ClipsDescendants = true
+MainFrame.ClipsDescendants = false
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Visible = false
@@ -59,11 +66,15 @@ local UICorner = Instance.new("UICorner", MainFrame)
 UICorner.CornerRadius = UDim.new(0, 12)
 local Gradient = Instance.new("UIGradient", MainFrame)
 Gradient.Color = ColorSequence.new(Color3.fromRGB(10, 10, 20), Color3.fromRGB(20, 20, 30))
+local Shadow = Instance.new("UIStroke", MainFrame)
+Shadow.Thickness = 2
+Shadow.Color = Color3.fromRGB(0, 200, 200)
+Shadow.Transparency = 0.5
 local Title = Instance.new("TextLabel", MainFrame)
-Title.Size = UDim2.new(1, -60, 0, 25)
+Title.Size = UDim2.new(1, -100, 0, 25)
 Title.Position = UDim2.new(0, 10, 0, 5)
 Title.BackgroundTransparency = 1
-Title.Text = "Chesco & Noxi - v5.2"
+Title.Text = "Chesco & Noxi - v5.2.8"
 Title.TextColor3 = Color3.fromRGB(108, 59, 170)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 18
@@ -78,6 +89,16 @@ CloseButton.TextSize = 14
 CloseButton.Font = Enum.Font.GothamBold
 local CloseCorner = Instance.new("UICorner", CloseButton)
 CloseCorner.CornerRadius = UDim.new(0, 5)
+local MinimizeButton = Instance.new("TextButton", MainFrame)
+MinimizeButton.Size = UDim2.new(0, 25, 0, 25)
+MinimizeButton.Position = UDim2.new(1, -65, 0, 5)
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(40, 60, 90)
+MinimizeButton.Text = "–"
+MinimizeButton.TextColor3 = Color3.fromRGB(200, 210, 220)
+MinimizeButton.TextSize = 14
+MinimizeButton.Font = Enum.Font.GothamBold
+local MinimizeCorner = Instance.new("UICorner", MinimizeButton)
+MinimizeCorner.CornerRadius = UDim.new(0, 5)
 
 local TabFrame = Instance.new("Frame", MainFrame)
 TabFrame.Size = UDim2.new(1, -10, 0, 35)
@@ -88,11 +109,12 @@ TabCorner.CornerRadius = UDim.new(0, 8)
 local Tabs = {"Aimbot", "ESP", "Rage", "Visuals", "Misc", "Stats", "Config"}
 local TabContainers = {}
 local ActiveTab = nil
+local IsMinimized = false
 
 for i, tabName in ipairs(Tabs) do
     local TabButton = Instance.new("TextButton")
-    TabButton.Size = UDim2.new(1/#Tabs, 0, 1, 0)
-    TabButton.Position = UDim2.new((i-1)/#Tabs, 0, 0, 0)
+    TabButton.Size = UDim2.new(1/#Tabs, -2, 1, 0)
+    TabButton.Position = UDim2.new((i-1)/#Tabs, 1, 0, 0)
     TabButton.BackgroundTransparency = 0.5
     TabButton.BackgroundColor3 = Color3.fromRGB(50, 70, 100)
     TabButton.Text = tabName
@@ -105,6 +127,7 @@ for i, tabName in ipairs(Tabs) do
     local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Size = UDim2.new(1, -20, 1, -90)
     TabContainer.Position = UDim2.new(0, 10, 0, 80)
+    TabContainer.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
     TabContainer.BackgroundTransparency = 0.1
     TabContainer.Visible = false
     TabContainer.ScrollBarThickness = 5
@@ -112,20 +135,28 @@ for i, tabName in ipairs(Tabs) do
     TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
     TabContainer.Parent = MainFrame
     TabContainers[tabName] = TabContainer
+    TabButton.MouseEnter:Connect(function()
+        if ActiveTab ~= TabContainer then
+            TweenService:Create(TabButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {Size = UDim2.new(1/#Tabs + 0.01, -2, 1, 2)}):Play()
+        end
+    end)
+    TabButton.MouseLeave:Connect(function()
+        if ActiveTab ~= TabContainer then
+            TweenService:Create(TabButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {Size = UDim2.new(1/#Tabs, -2, 1, 0)}):Play()
+        end
+    end)
     TabButton.MouseButton1Click:Connect(function()
         if ActiveTab == TabContainer then return end
         if ActiveTab then ActiveTab.Visible = false end
         for _, child in pairs(TabFrame:GetChildren()) do
-            if child:IsA("TextButton") and child.Text ~= tabName then
-                child.BackgroundTransparency = 0.5
-                child.TextColor3 = Color3.fromRGB(200, 210, 220)
+            if child:IsA("TextButton") then
+                child.BackgroundTransparency = child.Text == tabName and 0 or 0.5
+                child.TextColor3 = child.Text == tabName and Color3.fromRGB(108, 59, 170) or Color3.fromRGB(200, 210, 220)
+                TweenService:Create(child, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {Size = child.Text == tabName and UDim2.new(1/#Tabs + 0.02, -2, 1, 5) or UDim2.new(1/#Tabs, -2, 1, 0)}):Play()
             end
         end
         ActiveTab = TabContainer
         ActiveTab.Visible = true
-        TabButton.BackgroundTransparency = 0
-        TabButton.TextColor3 = Color3.fromRGB(108, 59, 170)
-        TweenService:Create(TabButton, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Size = UDim2.new(1/#Tabs + 0.02, 0, 1, 5)}):Play()
     end)
 end
 
@@ -148,10 +179,10 @@ FPSLabel.TextSize = 14
 FPSLabel.Font = Enum.Font.Gotham
 FPSLabel.TextXAlignment = Enum.TextXAlignment.Right
 
-local AimbotSettings = {Enabled = false, SilentAim = false, AimLock = false, Smoothing = 1, FOV = 100, TriggerKey = Enum.UserInputType.MouseButton2, TeamCheck = true, Wallbang = false, AimPart = "Head"}
-local ESPSettings = {Enabled = false, Names = true, Health = true, Distance = true, Chams = false, Boxes3D = true, Tracers = false, Skeleton = false, TeamColors = true, MaxDistance = 1000, TextColor = Color3.fromRGB(108, 59, 170), ChamsColor = Color3.fromRGB(0, 255, 0), Rainbow = false}
-local RageSettings = {KillAura = false, KillAuraRange = 10, Noclip = false, FlyHack = false, FlySpeed = 50, AutoFarm = false, HitboxExpander = false, HitboxSize = 10, TriggerBot = false, TriggerDelay = 0.1}
-local VisualSettings = {Crosshair = false, FOVCircle = false, FOVCircleRadius = 100, FOVCircleColor = Color3.fromRGB(108, 59, 170), Fullbright = false}
+local AimbotSettings = {Enabled = false, SilentAim = false, AimLock = false, DynamicSmoothing = false, Smoothing = 1, FOV = 100, TriggerKey = Enum.UserInputType.MouseButton2, TeamCheck = true, Wallbang = false, AimPart = "Head"}
+local ESPSettings = {Enabled = false, Names = true, Health = true, Distance = true, Chams = false, Boxes3D = true, Tracers = false, Skeleton = false, TeamColors = true, VisibleOnly = false, MaxDistance = 1000, TextColor = Color3.fromRGB(108, 59, 170), ChamsColor = Color3.fromRGB(0, 255, 0), Rainbow = false}
+local RageSettings = {KillAura = false, KillAuraRange = 10, Noclip = false, FlyHack = false, FlySpeed = 50, AutoFarm = false, HitboxExpander = false, HitboxSize = 10, TriggerBot = false, TriggerDelay = 0.1, TriggerHumanoidCheck = true, BunnyHop = false}
+local VisualSettings = {Crosshair = false, FOVCircle = false, FOVCircleRadius = 100, FOVCircleColor = Color3.fromRGB(108, 59, 170), NoFog = false}
 local MiscSettings = {SpinBot = false, AntiAim = false, KillSound = false, Notifications = true, FPSBoost = false}
 local StatsSettings = {LockOnTime = 0, TargetSwitches = 0, LastTargetSwitch = tick()}
 local ConfigSettings = {Aimbot = AimbotSettings, ESP = ESPSettings, Rage = RageSettings, Visuals = VisualSettings, Misc = MiscSettings, Stats = StatsSettings}
@@ -161,7 +192,9 @@ if loadedConfig then
     for key, settings in pairs(loadedConfig) do
         if ConfigSettings[key] then
             for setting, value in pairs(settings) do
-                ConfigSettings[key][setting] = value
+                if ConfigSettings[key][setting] ~= nil then
+                    ConfigSettings[key][setting] = value
+                end
             end
         end
     end
@@ -169,15 +202,29 @@ end
 
 local Connections = {}
 local function cleanup()
+    AimbotSettings.Enabled = false
+    ESPSettings.Enabled = false
+    RageSettings.KillAura = false
+    RageSettings.Noclip = false
+    RageSettings.FlyHack = false
+    RageSettings.HitboxExpander = false
+    RageSettings.TriggerBot = false
+    RageSettings.BunnyHop = false
+    VisualSettings.Crosshair = false
+    VisualSettings.FOVCircle = false
+    VisualSettings.NoFog = false
+    MiscSettings.SpinBot = false
+    MiscSettings.AntiAim = false
+    MiscSettings.FPSBoost = false
     for _, conn in pairs(Connections) do
-        conn:Disconnect()
+        if conn then conn:Disconnect() end
     end
     for _, ESP in pairs(ESPInstances) do
-        ESP.Gui:Destroy()
-        ESP.Chams:Destroy()
-        for _, line in pairs(ESP.BoxLines) do line:Remove() end
-        ESP.Tracer:Remove()
-        for _, line in pairs(ESP.Skeleton) do line:Remove() end
+        if ESP.Gui then ESP.Gui:Destroy() end
+        if ESP.Chams then ESP.Chams:Destroy() end
+        for _, line in pairs(ESP.BoxLines or {}) do if line then line:Remove() end end
+        if ESP.Tracer then ESP.Tracer:Remove() end
+        for _, line in pairs(ESP.Skeleton or {}) do if line then line:Remove() end end
     end
     for _, Player in pairs(Players:GetPlayers()) do
         if Player ~= LocalPlayer and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
@@ -192,9 +239,20 @@ local function cleanup()
         if Root:FindFirstChild("FlyVelocity") then Root.FlyVelocity:Destroy() end
         if Root:FindFirstChild("FlyGyro") then Root.FlyGyro:Destroy() end
     end
-    UI:Destroy()
+    if UI then UI:Destroy() end
 end
 CloseButton.MouseButton1Click:Connect(cleanup)
+MinimizeButton.MouseButton1Click:Connect(function()
+    IsMinimized = not IsMinimized
+    TabFrame.Visible = not IsMinimized
+    for _, container in pairs(TabContainers) do
+        container.Visible = not IsMinimized and container == ActiveTab
+    end
+    StatusLabel.Visible = not IsMinimized
+    FPSLabel.Visible = not IsMinimized
+    MainFrame.Size = IsMinimized and UDim2.new(0, 450, 0, 40) or UDim2.new(0, 450, 0, 350)
+    MinimizeButton.Text = IsMinimized and "+" or "–"
+end)
 OpenButton.MouseButton1Click:Connect(function()
     WelcomeFrame.Visible = false
     MainFrame.Visible = true
@@ -250,12 +308,22 @@ local function createUIElement(type, label, setting, callback, parent, yPos, ext
         ToggleButton.Text = ""
         local Corner = Instance.new("UICorner", ToggleButton)
         Corner.CornerRadius = UDim.new(0, 5)
+        local Shadow = Instance.new("UIStroke", ToggleButton)
+        Shadow.Thickness = 1
+        Shadow.Color = Color3.fromRGB(0, 200, 200)
+        Shadow.Transparency = 0.7
         local ToggleIndicator = Instance.new("Frame", ToggleButton)
         ToggleIndicator.Size = UDim2.new(0.4, 0, 0.8, 0)
         ToggleIndicator.Position = setting and UDim2.new(0.55, 0, 0.1, 0) or UDim2.new(0.05, 0, 0.1, 0)
         ToggleIndicator.BackgroundColor3 = setting and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 200, 200)
         local IndicatorCorner = Instance.new("UICorner", ToggleIndicator)
         IndicatorCorner.CornerRadius = UDim.new(0, 5)
+        ToggleButton.MouseEnter:Connect(function()
+            TweenService:Create(ToggleButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {Size = UDim2.new(0.16, 0, 0.75, 0)}):Play()
+        end)
+        ToggleButton.MouseLeave:Connect(function()
+            TweenService:Create(ToggleButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {Size = UDim2.new(0.15, 0, 0.7, 0)}):Play()
+        end)
         ToggleButton.MouseButton1Click:Connect(function()
             setting = not setting
             callback(setting)
@@ -273,6 +341,10 @@ local function createUIElement(type, label, setting, callback, parent, yPos, ext
         Slider.Text = ""
         local SliderCorner = Instance.new("UICorner", Slider)
         SliderCorner.CornerRadius = UDim.new(0, 4)
+        local Shadow = Instance.new("UIStroke", Slider)
+        Shadow.Thickness = 1
+        Shadow.Color = Color3.fromRGB(0, 200, 200)
+        Shadow.Transparency = 0.7
         local SliderFill = Instance.new("Frame", Slider)
         SliderFill.Size = UDim2.new((setting - extra.min) / (extra.max - extra.min), 0, 1, 0)
         SliderFill.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
@@ -291,7 +363,7 @@ local function createUIElement(type, label, setting, callback, parent, yPos, ext
                 local sliderWidth = Slider.AbsoluteSize.X
                 local fraction = math.clamp((mouseX - sliderX) / sliderWidth, 0, 1)
                 local value = extra.min + (extra.max - extra.min) * fraction
-                value = type == "slider" and math.floor(value * 10) / 10 or math.floor(value)
+                value = math.floor(value * 10) / 10
                 SliderFill.Size = UDim2.new(fraction, 0, 1, 0)
                 Label.Text = label .. ": " .. value
                 callback(value)
@@ -307,17 +379,26 @@ local function createUIElement(type, label, setting, callback, parent, yPos, ext
         DropdownButton.TextSize = 12
         local DropdownCorner = Instance.new("UICorner", DropdownButton)
         DropdownCorner.CornerRadius = UDim.new(0, 5)
+        local Shadow = Instance.new("UIStroke", DropdownButton)
+        Shadow.Thickness = 1
+        Shadow.Color = Color3.fromRGB(0, 200, 200)
+        Shadow.Transparency = 0.7
         local DropdownMenu = Instance.new("Frame", Frame)
-        DropdownMenu.Size = UDim2.new(0.15, 0, 0, #extra.options * 25)
-        DropdownMenu.Position = UDim2.new(0.85, 0, 1, 0)
+        DropdownMenu.Size = UDim2.new(0.2, 0, 0, #extra.options * 30)
+        DropdownMenu.Position = UDim2.new(0.8, 0, 1, 5)
         DropdownMenu.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
         DropdownMenu.Visible = false
+        DropdownMenu.ClipsDescendants = false
         local MenuCorner = Instance.new("UICorner", DropdownMenu)
         MenuCorner.CornerRadius = UDim.new(0, 5)
+        local MenuShadow = Instance.new("UIStroke", DropdownMenu)
+        MenuShadow.Thickness = 1
+        MenuShadow.Color = Color3.fromRGB(0, 200, 200)
+        MenuShadow.Transparency = 0.7
         for i, option in ipairs(extra.options) do
             local OptionButton = Instance.new("TextButton", DropdownMenu)
-            OptionButton.Size = UDim2.new(1, 0, 0, 25)
-            OptionButton.Position = UDim2.new(0, 0, 0, (i-1) * 25)
+            OptionButton.Size = UDim2.new(1, 0, 0, 30)
+            OptionButton.Position = UDim2.new(0, 0, 0, (i-1) * 30)
             OptionButton.BackgroundTransparency = 1
             OptionButton.Text = option
             OptionButton.TextColor3 = Color3.fromRGB(200, 210, 220)
@@ -339,12 +420,13 @@ end
 createUIElement("toggle", "Aimbot", AimbotSettings.Enabled, function(v) AimbotSettings.Enabled = v end, TabContainers["Aimbot"], 0)
 createUIElement("toggle", "Silent Aim", AimbotSettings.SilentAim, function(v) AimbotSettings.SilentAim = v end, TabContainers["Aimbot"], 40)
 createUIElement("toggle", "Aim Lock", AimbotSettings.AimLock, function(v) AimbotSettings.AimLock = v end, TabContainers["Aimbot"], 80)
-createUIElement("toggle", "Team Check", AimbotSettings.TeamCheck, function(v) AimbotSettings.TeamCheck = v end, TabContainers["Aimbot"], 120)
-createUIElement("toggle", "Wallbang", AimbotSettings.Wallbang, function(v) AimbotSettings.Wallbang = v end, TabContainers["Aimbot"], 160)
-createUIElement("slider", "Smoothing", AimbotSettings.Smoothing, function(v) AimbotSettings.Smoothing = v end, TabContainers["Aimbot"], 200, {min = 1, max = 10})
-createUIElement("slider", "FOV", AimbotSettings.FOV, function(v) AimbotSettings.FOV = v end, TabContainers["Aimbot"], 255, {min = 10, max = 300})
-createUIElement("dropdown", "Aim Part", AimbotSettings.AimPart, function(v) AimbotSettings.AimPart = v end, TabContainers["Aimbot"], 310, {options = {"Head", "UpperTorso", "LowerTorso", "LeftArm", "RightArm", "LeftLeg", "RightLeg"}})
-TabContainers["Aimbot"].CanvasSize = UDim2.new(0, 0, 0, 350)
+createUIElement("toggle", "Dynamic Smoothing", AimbotSettings.DynamicSmoothing, function(v) AimbotSettings.DynamicSmoothing = v end, TabContainers["Aimbot"], 120)
+createUIElement("toggle", "Team Check", AimbotSettings.TeamCheck, function(v) AimbotSettings.TeamCheck = v end, TabContainers["Aimbot"], 160)
+createUIElement("toggle", "Wallbang", AimbotSettings.Wallbang, function(v) AimbotSettings.Wallbang = v end, TabContainers["Aimbot"], 200)
+createUIElement("slider", "Smoothing", AimbotSettings.Smoothing, function(v) AimbotSettings.Smoothing = v end, TabContainers["Aimbot"], 240, {min = 1, max = 10})
+createUIElement("slider", "FOV", AimbotSettings.FOV, function(v) AimbotSettings.FOV = v end, TabContainers["Aimbot"], 295, {min = 10, max = 300})
+createUIElement("dropdown", "Aim Part", AimbotSettings.AimPart, function(v) AimbotSettings.AimPart = v end, TabContainers["Aimbot"], 350, {options = {"Head", "UpperTorso", "LowerTorso", "LeftArm", "RightArm", "LeftLeg", "RightLeg"}})
+TabContainers["Aimbot"].CanvasSize = UDim2.new(0, 0, 0, 390)
 createUIElement("toggle", "ESP Enabled", ESPSettings.Enabled, function(v) ESPSettings.Enabled = v end, TabContainers["ESP"], 0)
 createUIElement("toggle", "Names", ESPSettings.Names, function(v) ESPSettings.Names = v end, TabContainers["ESP"], 40)
 createUIElement("toggle", "Health", ESPSettings.Health, function(v) ESPSettings.Health = v end, TabContainers["ESP"], 80)
@@ -354,8 +436,9 @@ createUIElement("toggle", "3D Boxes", ESPSettings.Boxes3D, function(v) ESPSettin
 createUIElement("toggle", "Tracers", ESPSettings.Tracers, function(v) ESPSettings.Tracers = v end, TabContainers["ESP"], 240)
 createUIElement("toggle", "Skeleton", ESPSettings.Skeleton, function(v) ESPSettings.Skeleton = v end, TabContainers["ESP"], 280)
 createUIElement("toggle", "Team Colors", ESPSettings.TeamColors, function(v) ESPSettings.TeamColors = v end, TabContainers["ESP"], 320)
-createUIElement("toggle", "Rainbow", ESPSettings.Rainbow, function(v) ESPSettings.Rainbow = v end, TabContainers["ESP"], 360)
-TabContainers["ESP"].CanvasSize = UDim2.new(0, 0, 0, 400)
+createUIElement("toggle", "Visible Only", ESPSettings.VisibleOnly, function(v) ESPSettings.VisibleOnly = v end, TabContainers["ESP"], 360)
+createUIElement("toggle", "Rainbow", ESPSettings.Rainbow, function(v) ESPSettings.Rainbow = v end, TabContainers["ESP"], 400)
+TabContainers["ESP"].CanvasSize = UDim2.new(0, 0, 0, 440)
 createUIElement("toggle", "Kill Aura", RageSettings.KillAura, function(v) RageSettings.KillAura = v end, TabContainers["Rage"], 0)
 createUIElement("slider", "Kill Aura Range", RageSettings.KillAuraRange, function(v) RageSettings.KillAuraRange = v end, TabContainers["Rage"], 40, {min = 5, max = 50})
 createUIElement("toggle", "Noclip", RageSettings.Noclip, function(v) RageSettings.Noclip = v end, TabContainers["Rage"], 95)
@@ -366,11 +449,13 @@ createUIElement("toggle", "Hitbox Expander", RageSettings.HitboxExpander, functi
 createUIElement("slider", "Hitbox Size", RageSettings.HitboxSize, function(v) RageSettings.HitboxSize = v end, TabContainers["Rage"], 325, {min = 5, max = 20})
 createUIElement("toggle", "TriggerBot", RageSettings.TriggerBot, function(v) RageSettings.TriggerBot = v end, TabContainers["Rage"], 380)
 createUIElement("slider", "Trigger Delay", RageSettings.TriggerDelay, function(v) RageSettings.TriggerDelay = v end, TabContainers["Rage"], 420, {min = 0.1, max = 1})
-TabContainers["Rage"].CanvasSize = UDim2.new(0, 0, 0, 475)
+createUIElement("toggle", "Trigger Humanoid Check", RageSettings.TriggerHumanoidCheck, function(v) RageSettings.TriggerHumanoidCheck = v end, TabContainers["Rage"], 475)
+createUIElement("toggle", "Bunny Hop", RageSettings.BunnyHop, function(v) RageSettings.BunnyHop = v end, TabContainers["Rage"], 515)
+TabContainers["Rage"].CanvasSize = UDim2.new(0, 0, 0, 555)
 createUIElement("toggle", "Crosshair", VisualSettings.Crosshair, function(v) VisualSettings.Crosshair = v end, TabContainers["Visuals"], 0)
 createUIElement("toggle", "FOV Circle", VisualSettings.FOVCircle, function(v) VisualSettings.FOVCircle = v end, TabContainers["Visuals"], 40)
 createUIElement("slider", "FOV Circle Radius", VisualSettings.FOVCircleRadius, function(v) VisualSettings.FOVCircleRadius = v end, TabContainers["Visuals"], 80, {min = 50, max = 200})
-createUIElement("toggle", "Fullbright", VisualSettings.Fullbright, function(v) VisualSettings.Fullbright = v end, TabContainers["Visuals"], 135)
+createUIElement("toggle", "No Fog", VisualSettings.NoFog, function(v) VisualSettings.NoFog = v end, TabContainers["Visuals"], 135)
 TabContainers["Visuals"].CanvasSize = UDim2.new(0, 0, 0, 175)
 createUIElement("toggle", "Spin Bot", MiscSettings.SpinBot, function(v) MiscSettings.SpinBot = v end, TabContainers["Misc"], 0)
 createUIElement("toggle", "Anti-Aim", MiscSettings.AntiAim, function(v) MiscSettings.AntiAim = v end, TabContainers["Misc"], 40)
@@ -427,7 +512,9 @@ LoadButton.MouseButton1Click:Connect(function()
         for key, settings in pairs(loaded) do
             if ConfigSettings[key] then
                 for setting, value in pairs(settings) do
-                    ConfigSettings[key][setting] = value
+                    if ConfigSettings[key][setting] ~= nil then
+                        ConfigSettings[key][setting] = value
+                    end
                 end
             end
         end
@@ -449,8 +536,8 @@ CrosshairV.Position = UDim2.new(0.5, 0, 0.5, -10)
 CrosshairV.BackgroundColor3 = Color3.fromRGB(108, 59, 170)
 CrosshairV.Visible = false
 local FOVCircle = Instance.new("ImageLabel", UI)
-FOVCircle.Size = UDim2.new(0, 200, 0, 200)
-FOVCircle.Position = UDim2.new(0.5, -100, 0.5, -100)
+FOVCircle.Size = UDim2.new(0, VisualSettings.FOVCircleRadius * 2, 0, VisualSettings.FOVCircleRadius * 2)
+FOVCircle.Position = UDim2.new(0.5, -VisualSettings.FOVCircleRadius, 0.5, -VisualSettings.FOVCircleRadius)
 FOVCircle.BackgroundTransparency = 1
 FOVCircle.Image = "rbxassetid://494929581"
 FOVCircle.ImageColor3 = VisualSettings.FOVCircleColor
@@ -465,22 +552,23 @@ local LastLockOnTime = tick()
 local LastTriggerTime = 0
 
 Connections[#Connections + 1] = RunService.Stepped:Connect(function()
-    if not RageSettings.HitboxExpander then
-        for _, Player in pairs(Players:GetPlayers()) do
-            if Player ~= LocalPlayer and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-                local Root = Player.Character.HumanoidRootPart
-                Root.Size = Vector3.new(2, 5, 1)
-                Root.Transparency = 0
-                Root.CanCollide = true
-            end
-        end
-    else
+    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
+    if RageSettings.HitboxExpander then
         for _, Player in pairs(Players:GetPlayers()) do
             if Player ~= LocalPlayer and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
                 local Root = Player.Character.HumanoidRootPart
                 Root.Size = Vector3.new(RageSettings.HitboxSize, RageSettings.HitboxSize, RageSettings.HitboxSize)
                 Root.Transparency = 0.9
                 Root.CanCollide = false
+            end
+        end
+    else
+        for _, Player in pairs(Players:GetPlayers()) do
+            if Player ~= LocalPlayer and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+                local Root = Player.Character.HumanoidRootPart
+                Root.Size = Vector3.new(2, 5, 1)
+                Root.Transparency = 0
+                Root.CanCollide = true
             end
         end
     end
@@ -571,6 +659,7 @@ local function GetClosestPlayer()
         local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
         local Humanoid = Character:FindFirstChild("Humanoid")
         if not HumanoidRootPart or not Humanoid or Humanoid.Health <= 0 then continue end
+        if RageSettings.TriggerHumanoidCheck and RageSettings.TriggerBot and not Humanoid then continue end
         if AimbotSettings.TeamCheck and Player.Team == LocalPlayer.Team and LocalPlayer.Team ~= nil then continue end
         local AimPart = Character:FindFirstChild(AimbotSettings.AimPart)
         if not AimPart then continue end
@@ -584,7 +673,7 @@ local function GetClosestPlayer()
             ClosestPlayer = Player
         end
     end
-    return ClosestPlayer
+    return ClosestPlayer, ClosestDistance
 end
 
 Connections[#Connections + 1] = UserInputService.InputBegan:Connect(function(input)
@@ -601,6 +690,11 @@ Connections[#Connections + 1] = RunService.RenderStepped:Connect(function()
     local current = tick()
     FPSLabel.Text = "FPS: " .. math.floor(1 / (current - lastFrame))
     lastFrame = current
+    local activeFeatures = {}
+    if AimbotSettings.Enabled then table.insert(activeFeatures, "Aimbot") end
+    if ESPSettings.Enabled then table.insert(activeFeatures, "ESP") end
+    if RageSettings.KillAura or RageSettings.FlyHack or RageSettings.TriggerBot or RageSettings.BunnyHop then table.insert(activeFeatures, "Rage") end
+    StatusLabel.Text = #activeFeatures > 0 and "Active: " .. table.concat(activeFeatures, ", ") or "Status: Inactive"
     if ESPSettings.Rainbow then
         Hue = (Hue + 0.05) % 1
         ESPSettings.TextColor = Color3.fromHSV(Hue, 1, 1)
@@ -608,7 +702,7 @@ Connections[#Connections + 1] = RunService.RenderStepped:Connect(function()
         VisualSettings.FOVCircleColor = Color3.fromHSV(Hue, 1, 1)
     end
     if AimbotSettings.Enabled or RageSettings.TriggerBot then
-        local NewTarget = GetClosestPlayer()
+        local NewTarget, Distance = GetClosestPlayer()
         if NewTarget ~= Target then
             if Target then
                 StatsSettings.TargetSwitches = StatsSettings.TargetSwitches + 1
@@ -617,32 +711,28 @@ Connections[#Connections + 1] = RunService.RenderStepped:Connect(function()
             Target = NewTarget
             LastLockOnTime = tick()
         end
-        if Target and Target.Character then
+        if Target and Target.Character and Target.Character:FindFirstChild(AimbotSettings.AimPart) then
             local AimPart = Target.Character:FindFirstChild(AimbotSettings.AimPart)
-            if AimPart then
-                local Velocity = Target.Character.HumanoidRootPart.Velocity
-                local TargetPos = AimPart.Position + Velocity * 0.1
-                local ScreenPos, OnScreen = Camera:WorldToViewportPoint(TargetPos)
-                if OnScreen or AimbotSettings.Wallbang then
-                    local MousePos = UserInputService:GetMouseLocation()
-                    local TargetScreenPos = Vector2.new(ScreenPos.X, ScreenPos.Y)
-                    local Delta = (TargetScreenPos - MousePos) / AimbotSettings.Smoothing
-                    if RageSettings.TriggerBot and (tick() - LastTriggerTime) >= RageSettings.TriggerDelay and LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool") then
+            local Velocity = Target.Character.HumanoidRootPart.Velocity
+            local TargetPos = AimPart.Position + Velocity * 0.1
+            local ScreenPos, OnScreen = Camera:WorldToViewportPoint(TargetPos)
+            if OnScreen or AimbotSettings.Wallbang then
+                local MousePos = UserInputService:GetMouseLocation()
+                local TargetScreenPos = Vector2.new(ScreenPos.X, ScreenPos.Y)
+                local EffectiveSmoothing = AimbotSettings.Smoothing
+                local Delta = (TargetScreenPos - MousePos) / EffectiveSmoothing
+                if RageSettings.TriggerBot and (tick() - LastTriggerTime) >= RageSettings.TriggerDelay and LocalPlayer.Character then
+                    pcall(function() mouse1press() wait() mouse1release() end)
+                    LastTriggerTime = tick()
+                end
+                if AimbotSettings.Enabled and IsAiming then
+                    if AimbotSettings.SilentAim and LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool") then
                         local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
                         if Tool and Tool:FindFirstChild("Fire") then
                             Tool.Fire:FireServer(TargetPos)
-                            LastTriggerTime = tick()
                         end
-                    end
-                    if AimbotSettings.Enabled then
-                        if AimbotSettings.SilentAim and LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool") then
-                            local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
-                            if Tool and Tool:FindFirstChild("Fire") then
-                                Tool.Fire:FireServer(TargetPos)
-                            end
-                        elseif IsAiming then
-                            pcall(function() mousemoverel(Delta.X, Delta.Y) end)
-                        end
+                    else
+                        pcall(function() mousemoverel(Delta.X, Delta.Y) end)
                     end
                 end
             end
@@ -668,9 +758,17 @@ Connections[#Connections + 1] = RunService.RenderStepped:Connect(function()
             local RootPart = Character.HumanoidRootPart
             local Humanoid = Character.Humanoid
             local Distance = (LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")) and (RootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude or math.huge
+            if Distance > ESPSettings.MaxDistance then
+                ESP.Gui.Enabled = false
+                ESP.Chams.Enabled = false
+                for _, line in pairs(ESP.BoxLines) do line.Visible = false end
+                ESP.Tracer.Visible = false
+                for _, line in pairs(ESP.Skeleton) do line.Visible = false end
+                continue
+            end
             local espColor = ESPSettings.TeamColors and Player.Team and Player.TeamColor.Color or ESPSettings.TextColor
-            ESP.Gui.Enabled = Distance <= ESPSettings.MaxDistance
-            ESP.Chams.Enabled = ESPSettings.Chams and Distance <= ESPSettings.MaxDistance
+            ESP.Gui.Enabled = true
+            ESP.Chams.Enabled = ESPSettings.Chams
             ESP.Name.Text = ESPSettings.Names and Player.Name or ""
             ESP.Health.Text = ESPSettings.Health and ("HP: " .. math.floor(Humanoid.Health)) or ""
             ESP.Distance.Text = ESPSettings.Distance and ("Dist: " .. math.floor(Distance)) or ""
@@ -679,18 +777,14 @@ Connections[#Connections + 1] = RunService.RenderStepped:Connect(function()
             ESP.Distance.TextColor3 = espColor
             ESP.Chams.FillColor = ESPSettings.ChamsColor
             ESP.Chams.OutlineColor = espColor
-            if ESPSettings.Boxes3D and Distance <= ESPSettings.MaxDistance then
+            if ESPSettings.Boxes3D then
                 local cframe, size = Character:GetBoundingBox()
                 size = size * 0.5
                 local corners = {
-                    cframe * Vector3.new(-size.X, size.Y, -size.Z),
-                    cframe * Vector3.new(size.X, size.Y, -size.Z),
-                    cframe * Vector3.new(size.X, -size.Y, -size.Z),
-                    cframe * Vector3.new(-size.X, -size.Y, -size.Z),
-                    cframe * Vector3.new(-size.X, size.Y, size.Z),
-                    cframe * Vector3.new(size.X, size.Y, size.Z),
-                    cframe * Vector3.new(size.X, -size.Y, size.Z),
-                    cframe * Vector3.new(-size.X, -size.Y, size.Z)
+                    cframe * Vector3.new(-size.X, size.Y, -size.Z), cframe * Vector3.new(size.X, size.Y, -size.Z),
+                    cframe * Vector3.new(size.X, -size.Y, -size.Z), cframe * Vector3.new(-size.X, -size.Y, -size.Z),
+                    cframe * Vector3.new(-size.X, size.Y, size.Z), cframe * Vector3.new(size.X, size.Y, size.Z),
+                    cframe * Vector3.new(size.X, -size.Y, size.Z), cframe * Vector3.new(-size.X, -size.Y, size.Z)
                 }
                 local screenCorners = {}
                 local allOnScreen = true
@@ -713,7 +807,7 @@ Connections[#Connections + 1] = RunService.RenderStepped:Connect(function()
             else
                 for _, line in pairs(ESP.BoxLines) do line.Visible = false end
             end
-            if ESPSettings.Tracers and Distance <= ESPSettings.MaxDistance then
+            if ESPSettings.Tracers then
                 local screenPos, onScreen = Camera:WorldToViewportPoint(RootPart.Position)
                 if onScreen then
                     ESP.Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
@@ -726,17 +820,11 @@ Connections[#Connections + 1] = RunService.RenderStepped:Connect(function()
             else
                 ESP.Tracer.Visible = false
             end
-            if ESPSettings.Skeleton and Distance <= ESPSettings.MaxDistance then
+            if ESPSettings.Skeleton then
                 local bones = {
-                    {"Head", "UpperTorso"},
-                    {"UpperTorso", "LowerTorso"},
-                    {"LowerTorso", "LeftUpperLeg"},
-                    {"LowerTorso", "RightUpperLeg"},
-                    {"LeftUpperLeg", "LeftLowerLeg"},
-                    {"RightUpperLeg", "RightLowerLeg"},
-                    {"UpperTorso", "LeftUpperArm"},
-                    {"UpperTorso", "RightUpperArm"},
-                    {"LeftUpperArm", "LeftLowerArm"},
+                    {"Head", "UpperTorso"}, {"UpperTorso", "LowerTorso"}, {"LowerTorso", "LeftUpperLeg"},
+                    {"LowerTorso", "RightUpperLeg"}, {"LeftUpperLeg", "LeftLowerLeg"}, {"RightUpperLeg", "RightLowerLeg"},
+                    {"UpperTorso", "LeftUpperArm"}, {"UpperTorso", "RightUpperArm"}, {"LeftUpperArm", "LeftLowerArm"},
                     {"RightUpperArm", "RightLowerArm"}
                 }
                 for i, bone in ipairs(bones) do
@@ -775,40 +863,46 @@ Connections[#Connections + 1] = RunService.RenderStepped:Connect(function()
     FOVCircle.Visible = VisualSettings.FOVCircle
     FOVCircle.Size = UDim2.new(0, VisualSettings.FOVCircleRadius * 2, 0, VisualSettings.FOVCircleRadius * 2)
     FOVCircle.Position = UDim2.new(0.5, -VisualSettings.FOVCircleRadius, 0.5, -VisualSettings.FOVCircleRadius)
-    if VisualSettings.Fullbright then
-        Lighting.Brightness = 2
+    if VisualSettings.NoFog then
         Lighting.FogEnd = 100000
-        Lighting.GlobalShadows = false
     else
-        Lighting.Brightness = 0
         Lighting.FogEnd = 100
-        Lighting.GlobalShadows = true
     end
     if MiscSettings.FPSBoost then
-        for _, v in pairs(workspace:GetDescendants()) do
-            if v:IsA("BasePart") then v.Material = Enum.Material.SmoothPlastic end
-        end
+        pcall(function()
+            for _, v in pairs(workspace:GetDescendants()) do
+                if v:IsA("BasePart") and v ~= LocalPlayer.Character then
+                    v.Material = Enum.Material.SmoothPlastic
+                end
+            end
+        end)
     end
 end)
 
 Connections[#Connections + 1] = RunService.Heartbeat:Connect(function()
-    if RageSettings.KillAura and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+    if not LocalPlayer.Character then return end
+    if RageSettings.KillAura then
         for _, Player in pairs(Players:GetPlayers()) do
             if Player ~= LocalPlayer and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") and Player.Character:FindFirstChild("Humanoid") and Player.Character.Humanoid.Health > 0 then
                 local Distance = (Player.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
                 if Distance <= RageSettings.KillAuraRange then
-                    pcall(function() Player.Character.Humanoid:TakeDamage(100) end)
+                    pcall(function()
+                        Player.Character.Humanoid:TakeDamage(100)
+                        if MiscSettings.KillSound and Player.Character.Humanoid.Health <= 0 then
+                            showNotification("Killed " .. Player.Name, Color3.fromRGB(255, 0, 0))
+                        end
+                    end)
                     wait(0.1)
                 end
             end
         end
     end
-    if RageSettings.Noclip and LocalPlayer.Character then
+    if RageSettings.Noclip then
         for _, Part in pairs(LocalPlayer.Character:GetChildren()) do
             if Part:IsA("BasePart") then Part.CanCollide = false end
         end
     end
-    if RageSettings.FlyHack and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+    if RageSettings.FlyHack and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
         local Root = LocalPlayer.Character.HumanoidRootPart
         local BodyVelocity = Root:FindFirstChild("FlyVelocity") or Instance.new("BodyVelocity")
         BodyVelocity.Name = "FlyVelocity"
@@ -825,15 +919,21 @@ Connections[#Connections + 1] = RunService.Heartbeat:Connect(function()
         )
         BodyVelocity.Velocity = Camera.CFrame:VectorToWorldSpace(MoveDirection * RageSettings.FlySpeed)
         BodyVelocity.Parent = Root
-    elseif LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+    elseif LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
         local Root = LocalPlayer.Character.HumanoidRootPart
         if Root:FindFirstChild("FlyVelocity") then Root.FlyVelocity:Destroy() end
         if Root:FindFirstChild("FlyGyro") then Root.FlyGyro:Destroy() end
     end
-    if MiscSettings.SpinBot and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+    if RageSettings.BunnyHop and LocalPlayer.Character:FindFirstChild("Humanoid") and UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+        local Humanoid = LocalPlayer.Character.Humanoid
+        if Humanoid.FloorMaterial ~= Enum.Material.Air then
+            Humanoid.Jump = true
+        end
+    end
+    if MiscSettings.SpinBot and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
         LocalPlayer.Character.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(360 * 0.1), 0)
     end
-    if MiscSettings.AntiAim and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+    if MiscSettings.AntiAim and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
         LocalPlayer.Character.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.Angles(math.rad(math.random(-180, 180)), math.rad(math.random(-180, 180)), 0)
     end
 end)
